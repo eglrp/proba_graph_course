@@ -1,0 +1,129 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsbsy}
+\usepackage{mathrsfs}
+\usepackage{appendix}
+\usepackage{amsthm}
+\usepackage{bbold}
+\usepackage{epstopdf}
+
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\newcommand{\bb}[1]{\mathbf{#1}}
+\newcommand{\pd}[2]{\frac{\partial {#1}}{\partial {#2}}}
+\newcommand{\parti}[1]{\pd{}{#1}}
+\newcommand{\bigCI}{\mathrel{\text{\scalebox{1.07}{$\perp\mkern-10mu\perp$}}}}
+\title{TP2 for Proba Graph}
+\author{Leman FENG\\ Email: flm8620@gmail.com\\Website: lemanfeng.com}
+
+\begin{document}
+	\maketitle
+	\section{Problem 1}
+	\subsection{1.1}
+	$X \bigCI Y | Z \Rightarrow p(x,y|z) = p(x|z) p(y|z)$ 
+	
+	\begin{equation*}
+	\begin{split}
+	p(x|y,z)=\frac{p(x,y,z)}{p(y,z)} = \frac{p(x,y|z)p(z)}{p(y|z)p(z)} = \frac{p(x,y|z)}{p(y|z)} = \frac{p(x|z)p(y|z)}{p(y|z)} = p(x|z)
+	\end{split}
+	\end{equation*}
+	
+	\subsection{1.2}
+	$p(x,y,z,t) = p(x)p(y)P(z|x,y)p(t|z)$
+	In general we can't have $X \bigCI Y | T$. To disprove it, consider this special case:
+	
+	$X \sim Ber(0.5), Y \sim Ber(0.5), Z=X+Y, T=Z$
+	
+	If we know $T=1$, then $X+Y=Z=1$. Clearly $X$ and $Y$ aren't independent if we know their sum.
+	
+	\section{2}
+	\subsection{2.1}
+	Thanks to the equivalent definition between factorization and probability distribution, we can interprete factorization functions directly as conditional probabilities.
+	
+	In graph G, we separate terms factorizing $x_i, x_j$:
+	\begin{equation}
+	p(x) = \left ( \prod_{k\neq i, k\neq j} p(x_k | x_{\pi_k}) \right ) p(x_i|x_{\pi_i}) p(x_j|x_{\pi_i}, x_i)
+	\end{equation}
+	Use bayes:
+	\begin{equation}
+	\begin{split}
+	p(x_i|x_{\pi_i}) p(x_j|x_{\pi_i}, x_i) &= \frac{p(x_i,x_{\pi_i})}{p(x_{\pi_i})} \frac{p(x_j, x_{\pi_i}, x_i)}{p( x_{\pi_i}, x_i)}\\
+	&=\frac{p(x_i , x_j, x_{\pi_i})}{p(x_{\pi_i})}\\
+	&=\frac{p(x_i | x_j, x_{\pi_i}) p(x_j, x_{\pi_i}) }{p(x_{\pi_i})}\\
+	&=p(x_i | x_j, x_{\pi_i}) p(x_j | x_{\pi_i}) \\
+	\end{split}
+	\end{equation}
+	which is factorized as if the edge $i,j$ is flipped. So the factorization of $G, G'$ give the same result.
+	
+	\subsection{2.2}
+	$G$ is a tree, so in it's undirected version, all cliques are edges. No v-structures are in $G$, so each node has at most one parent. W.o.l.g, note $x_r$ as the only root node. 
+	
+	\subsubsection{Prove $L(G) \in L(G')$}
+	Take $p(x)\in L(G)$ can be factorized as:
+	\begin{equation}
+	p(x) = f_r(x_r) \prod_{i\neq r} f_i(x_i, x_{\pi_i})
+	\end{equation}
+	
+	We choose one child $a$ of root $r$
+	\begin{equation}
+	p(x) = \left( f_r(x_r) f_a(x_a, x_r) \right) \prod_{i\neq r, i\neq a} f_i(x_i, x_{\pi_i})
+	\end{equation}
+	which is also a factorization according to all cliques(edges) in $G'$, so $p(x) \in G'$
+	\subsubsection{Prove $L(G') \in L(G)$}
+	Take $p(x)\in G'$, products of all cliques can be written as
+	\begin{equation}
+	p(x) = \frac{1}{Z}\prod_{i\neq r} \phi_i(x_i, x_{\pi_i})
+	\end{equation}
+	where $Z = \sum_{x} \prod_{i\neq r} \phi_i(x_i, x_{\pi_i})$
+	
+	Set 
+	\begin{equation}
+	f_r(x_r) = \frac{1}{Z} \sum_{x_i, i\neq r} \prod_{i\neq r} \phi_i(x_i, x_{\pi_i})
+	\end{equation}
+	
+	Let's say in oriented tree $G$ we have nodes $\{1,2,3,\dots,n\}$ in topological ordering, so $\{1\}$ is the root. Note $G\backslash \{n\}$ as the sub-tree obtained by deleting node $\{n\}$. Same for $G'\backslash \{n\}$
+	
+	We use the Proposition 4.21 in our undirected tree case: if $p\in L(G')$, then $p(x_1,\dots,x_{n-1}) \in L(G'\backslash \{n\})$.
+	
+	We note $E\backslash\{n\}$ as all edges except for the edge connecting to $\{n\}$
+	
+	Now we prove that in the tree case, if $L(G\backslash\{n\}) = L(G'\backslash\{n\})$, then $L(G)=L(G')$:
+	
+	Firstly $p(x_1,\dots,x_n)\in L(G)$, so we can have
+	\begin{equation}
+	p(x_1,\dots,x_n) = \frac{1}{Z_n} \phi(x_{n}, x_{\pi_n}) \prod_{e\in E'\backslash\{n\}} \phi(x_{e1}, x_{e2})
+	\end{equation}
+	
+	Say $p(x_1,\dots,x_{n-1}) \in L(G\backslash\{n\}) = L(G'\backslash\{n\})$, so we can have two decomposition:
+	\begin{equation}
+	p(x_1,\dots,x_{n-1}) = \frac{1}{Z_{n-1}} \prod_{e\in E'\backslash\{n\}} \phi(x_{e1}, x_{e2})
+	\end{equation}
+	and
+	\begin{equation}
+	p(x_1,\dots,x_{n-1}) = \prod_{i\in \{1,\dots,n-1\}} f_i(x_i, x_{\pi_i})
+	\end{equation}
+	
+	We set 
+	\begin{equation}
+	f_n(x_n, x_{\pi_n}) =  \frac{Z_{n-1}}{Z_n}  \phi(x_n, x_{\pi_n})
+	\end{equation}
+	then calculate
+	\begin{equation}
+	\begin{split}
+	f_n(X_n, X_{\pi_n}) &\prod_{i\in \{1,\dots,n-1\}} f_i(x_i, x_{\pi_i}) = f_n(x_n, x_{\pi_n}) p(x_1,\dots,x_{n-1})\\
+	&=\frac{Z_{n-1}}{Z_n}  \phi(x_n, x_{\pi_n})  \frac{1}{Z_{n-1}} \prod_{e\in E'\backslash\{n\}} \phi(x_{e1}, x_{e2})\\
+	&=p(x_1,\dots,x_{n})
+	\end{split}
+	\end{equation}
+	
+	One thing left to verify:
+	\begin{equation}
+	\sum_{x_n} f_n(x_n, x_{\pi_n}) = \sum_{x_n} \frac{Z_{n-1}}{Z_n}  \phi(x_n, x_{\pi_n}) = \sum_{x_n} \frac{p(x_1,\dots,x_n)}{p(x_1,\dots,x_{n-1})} = 1
+	\end{equation}
+	
+	that means $p(x_1,\dots,x_n) \in L(G)$
+	
+	
+\end{document}
